@@ -13,10 +13,12 @@ type Props = {
   chatLog: Message[];
   koeiroParam: KoeiroParam;
   assistantMessage: string;
+  openAiModel: string;
   onChangeSystemPrompt: (systemPrompt: string) => void;
   onChangeAiKey: (key: string) => void;
   onChangeChatLog: (index: number, text: string) => void;
   onChangeKoeiromapParam: (param: KoeiroParam) => void;
+  onChangeModel: (model: string) => void;
 };
 export const Menu = ({
   openAiKey,
@@ -24,10 +26,12 @@ export const Menu = ({
   chatLog,
   koeiroParam,
   assistantMessage,
+  openAiModel,
   onChangeSystemPrompt,
   onChangeAiKey,
   onChangeChatLog,
   onChangeKoeiromapParam,
+  onChangeModel,
 }: Props) => {
   const [showSettings, setShowSettings] = useState(false);
   const [showChatLog, setShowChatLog] = useState(false);
@@ -83,6 +87,13 @@ export const Menu = ({
     [viewer]
   );
 
+  const handleModelChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      onChangeModel(event.target.value);
+    },
+    [onChangeModel]
+  );
+
   return (
     <>
       <div className="absolute z-10 m-24">
@@ -118,12 +129,14 @@ export const Menu = ({
           chatLog={chatLog}
           systemPrompt={systemPrompt}
           koeiroParam={koeiroParam}
+          openAiModel={openAiModel}
           onClickClose={() => setShowSettings(false)}
           onChangeAiKey={handleAiKeyChange}
           onChangeSystemPrompt={handleChangeSystemPrompt}
           onChangeChatLog={onChangeChatLog}
           onChangeKoeiroParam={handleChangeKoeiroParam}
           onClickOpenVrmFile={handleClickOpenVrmFile}
+          onChangeModel={handleModelChange}
         />
       )}
       {!showChatLog && assistantMessage && (

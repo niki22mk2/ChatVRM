@@ -16,24 +16,28 @@ type Props = {
   systemPrompt: string;
   chatLog: Message[];
   koeiroParam: KoeiroParam;
+  openAiModel: string;
   onClickClose: () => void;
   onChangeAiKey: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onChangeSystemPrompt: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onChangeChatLog: (index: number, text: string) => void;
   onChangeKoeiroParam: (x: number, y: number) => void;
   onClickOpenVrmFile: () => void;
+  onChangeModel: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 };
 export const Settings = ({
   openAiKey,
   chatLog,
   systemPrompt,
   koeiroParam,
+  openAiModel,
   onClickClose,
   onChangeSystemPrompt,
   onChangeAiKey,
   onChangeChatLog,
   onChangeKoeiroParam,
   onClickOpenVrmFile,
+  onChangeModel,
 }: Props) => {
   return (
     <div className="absolute z-40 w-full h-full bg-white/80 backdrop-blur ">
@@ -64,13 +68,20 @@ export const Settings = ({
               />
               で取得できます。取得したAPIキーをフォームに入力してください。
             </div>
-            <div className="my-16">
-              入力されたAPIキーで、ブラウザから直接OpenAIのAPIを利用しますので、サーバー等には保存されません。
-              なお、利用しているモデルはGPT-3です。
-              <br />
-              ※APIキーや会話文はピクシブのサーバーに送信されません。
-            </div>
           </div>
+          {/* モデル選択の追加箇所 */}
+          <div className="my-16">
+            <div className="my-8 typography-20 font-bold">モデル選択</div>
+            <select
+              className="bg-surface1 hover:bg-surface1-hover rounded-8 px-16 py-8"
+              value={openAiModel}
+              onChange={onChangeModel}
+            >
+              <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+              <option value="gpt-4">gpt-4</option>
+            </select>
+          </div>
+          {/* モデル選択の追加箇所ここまで */}
           <div className="my-40">
             <div className="my-16 typography-20 font-bold">
               キャラクターモデル

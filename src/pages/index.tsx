@@ -38,6 +38,7 @@ export default function Home() {
   const [chatProcessing, setChatProcessing] = useState(false);
   const [chatLog, setChatLog] = useState<Message[]>([]);
   const [assistantMessage, setAssistantMessage] = useState("");
+  const [openAiModel, setOpenAiModel] = useState("gpt-3.5-turbo");
 
   const handleChangeChatLog = useCallback(
     (targetIndex: number, text: string) => {
@@ -95,7 +96,7 @@ export default function Home() {
         ...messageLog,
       ];
 
-      const stream = await getChatResponseStream(messages, openAiKey).catch(
+      const stream = await getChatResponseStream(messages, openAiKey, openAiModel).catch(
         (e) => {
           console.error(e);
           return null;
@@ -173,7 +174,7 @@ export default function Home() {
       setChatLog(messageLogAssistant);
       setChatProcessing(false);
     },
-    [systemPrompt, chatLog, handleSpeakAi, openAiKey, koeiroParam]
+    [systemPrompt, chatLog, handleSpeakAi, openAiKey, koeiroParam, openAiModel]
   );
 
   return (
@@ -191,10 +192,12 @@ export default function Home() {
         chatLog={chatLog}
         koeiroParam={koeiroParam}
         assistantMessage={assistantMessage}
+        openAiModel={openAiModel}
         onChangeAiKey={setOpenAiKey}
         onChangeSystemPrompt={setSystemPrompt}
         onChangeChatLog={handleChangeChatLog}
         onChangeKoeiromapParam={setKoeiroParam}
+        onChangeModel={setOpenAiModel}
       />
       <GitHubLink />
     </div>
