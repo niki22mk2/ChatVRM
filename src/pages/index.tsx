@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useState, useEffect } from "react";
 import VrmViewer from "@/components/vrmViewer";
 import { ViewerContext } from "@/features/vrmViewer/viewerContext";
 import {
@@ -32,13 +32,33 @@ const montserrat = Montserrat({
 export default function Home() {
   const { viewer } = useContext(ViewerContext);
 
-  const [systemPrompt, setSystemPrompt] = useState(SYSTEM_PROMPT);
+  const [systemPrompt, setSystemPrompt] = useState(
+    typeof window !== "undefined" ? localStorage.getItem("systemPrompt") || SYSTEM_PROMPT : SYSTEM_PROMPT
+  );
+  
   const [openAiKey, setOpenAiKey] = useState("");
-  const [koeiroParam, setKoeiroParam] = useState<KoeiroParam>(DEFAULT_PARAM);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedOpenAiKey = localStorage.getItem("openAiKey");
+      if (storedOpenAiKey) {
+        setOpenAiKey(storedOpenAiKey);
+      }
+    }
+  }, []);
+
+  const [koeiroParam, setKoeiroParam] = useState<KoeiroParam>(
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("koeiroParam") || "null") || DEFAULT_PARAM
+      : DEFAULT_PARAM
+  );
+  
   const [chatProcessing, setChatProcessing] = useState(false);
   const [chatLog, setChatLog] = useState<Message[]>([]);
   const [assistantMessage, setAssistantMessage] = useState("");
-  const [openAiModel, setOpenAiModel] = useState("gpt-3.5-turbo");
+
+  const [openAiModel, setOpenAiModel] = useState(
+    typeof window !== "undefined" ? localStorage.getItem("openAiModel") || "gpt-3.5-turbo" : "gpt-3.5-turbo"
+  );
 
   const handleChangeChatLog = useCallback(
     (targetIndex: number, text: string) => {
@@ -51,6 +71,42 @@ export default function Home() {
     [chatLog]
   );
 
+  const handleOpenAiKeyChange = useCallback(
+    (key: string) => {
+      setOpenAiKey(key);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("openAiKey", key); //実際は他の保存先を検討する
+      }
+    }, 
+    []
+  );
+  
+  const handleSystemPromptChange = useCallback(
+    (systemPrompt: string) => {
+      setSystemPrompt(systemPrompt);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("systemPrompt", systemPrompt);
+      }
+    }, 
+    []
+  );
+  
+  const handleChangeKoeiroParam = useCallback(
+    (param: KoeiroParam) => {
+      setKoeiroParam(param);
+      localStorage.setItem("koeiroParam", JSON.stringify(param));
+    }, 
+    []
+  );
+  
+  const handleChangeModel = useCallback(
+    (model: string) => {
+      setOpenAiModel(model);
+      localStorage.setItem("openAiModel", model);
+    }, 
+    []
+  );
+  
   /**
    * 文ごとに音声を直列でリクエストしながら再生する
    */
@@ -180,7 +236,7 @@ export default function Home() {
   return (
     <div className={`${m_plus_2.variable} ${montserrat.variable}`}>
       <Meta />
-      <Introduction openAiKey={openAiKey} onChangeAiKey={setOpenAiKey} />
+      {!openAiKey && <Introduction openAiKey={openAiKey} onChangeAiKey={handleOpenAiKeyChange} />}
       <VrmViewer />
       <MessageInputContainer
         isChatProcessing={chatProcessing}
@@ -193,11 +249,11 @@ export default function Home() {
         koeiroParam={koeiroParam}
         assistantMessage={assistantMessage}
         openAiModel={openAiModel}
-        onChangeAiKey={setOpenAiKey}
-        onChangeSystemPrompt={setSystemPrompt}
+        onChangeAiKey={handleOpenAiKeyChange}
+        onChangeSystemPrompt={handleSystemPromptChange}
         onChangeChatLog={handleChangeChatLog}
-        onChangeKoeiromapParam={setKoeiroParam}
-        onChangeModel={setOpenAiModel}
+        onChangeKoeiromapParam={handleChangeKoeiroParam}
+        onChangeModel={handleChangeModel}
       />
       <GitHubLink />
     </div>
