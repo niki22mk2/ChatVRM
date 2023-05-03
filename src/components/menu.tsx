@@ -72,9 +72,9 @@ export const Menu = ({
   }, []);
 
   const handleClickDeleteVrmFile = useCallback(() => {
-    deleteData("store", loadedVrmFile);
+    deleteData("store", "vrm");
     onChangeVrmFile("");
-  }, [loadedVrmFile, onChangeVrmFile]);
+  }, [onChangeVrmFile]);
 
   const handleChangeVrmFile = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,7 +91,7 @@ export const Menu = ({
         const url = window.URL.createObjectURL(blob);
         viewer.loadVrm(url);
         
-        await setData("store", file.name, file);
+        await setData("store", "vrm", file);
         onChangeVrmFile(file.name);
       }
 

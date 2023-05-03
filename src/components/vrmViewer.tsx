@@ -13,7 +13,7 @@ export default function VrmViewer({
   const { viewer } = useContext(ViewerContext);
 
   const loadVrm = useCallback(async () => {
-    const vrmFile = await getData("store", VrmPath);
+    const vrmFile = await getData("store", "vrm");
 
     if (vrmFile) {
       const url = URL.createObjectURL(vrmFile);
