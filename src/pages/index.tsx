@@ -16,6 +16,7 @@ import { Introduction } from "@/components/introduction";
 import { Menu } from "@/components/menu";
 import { GitHubLink } from "@/components/githubLink";
 import { Meta } from "@/components/meta";
+import { setData, getData } from "@/utils/db";
 
 const m_plus_2 = M_PLUS_2({
   variable: "--font-m-plus-2",
@@ -30,37 +31,42 @@ const montserrat = Montserrat({
 });
 
 export default function Home() {
+  const isBrowser = typeof window !== "undefined";
   const { viewer } = useContext(ViewerContext);
 
-  const [systemPrompt, setSystemPrompt] = useState(
-    typeof window !== "undefined" ? localStorage.getItem("systemPrompt") || SYSTEM_PROMPT : SYSTEM_PROMPT
-  );
-  
   const [openAiKey, setOpenAiKey] = useState("");
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedOpenAiKey = localStorage.getItem("openAiKey");
-      if (storedOpenAiKey) {
-        setOpenAiKey(storedOpenAiKey);
-      }
-    }
-  }, []);
-
-  const [koeiroParam, setKoeiroParam] = useState<KoeiroParam>(
-    typeof window !== "undefined" ? JSON.parse(localStorage.getItem("koeiroParam") || "null") || DEFAULT_PARAM : DEFAULT_PARAM
-  );
-  
   const [chatProcessing, setChatProcessing] = useState(false);
   const [chatLog, setChatLog] = useState<Message[]>([]);
   const [assistantMessage, setAssistantMessage] = useState("");
 
+  const [koeiroParam, setKoeiroParam] = useState<KoeiroParam>(
+    isBrowser && (JSON.parse(localStorage.getItem("koeiroParam") || "null") || DEFAULT_PARAM)
+  );
+  
+  const [systemPrompt, setSystemPrompt] = useState(
+    isBrowser && localStorage.getItem("systemPrompt") || SYSTEM_PROMPT
+  );
+  
   const [openAiModel, setOpenAiModel] = useState(
-    typeof window !== "undefined" ? localStorage.getItem("openAiModel") || "gpt-3.5-turbo" : "gpt-3.5-turbo"
+    isBrowser && localStorage.getItem("openAiModel") || "gpt-3.5-turbo"
   );
 
   const [loadedVrmFile, setLoadedVrmFile] = useState(
-    typeof window !== "undefined" ? localStorage.getItem("loadedVrmFile") || "/AvatarSample_B.vrm" : "/AvatarSample_B.vrm"
+    isBrowser && localStorage.getItem("loadedVrmFile") || "/AvatarSample_B.vrm"
   );
+
+  useEffect(() => {
+    async function fetchOpenAiKey() {
+      if (isBrowser) {
+        const storedOpenAiKey = await getData("store", "apiKey");
+        if (storedOpenAiKey) {
+          setOpenAiKey(storedOpenAiKey);
+        }
+      }
+    }
+    fetchOpenAiKey();
+  }, [isBrowser]);
+  
 
   const handleChangeChatLog = useCallback(
     (targetIndex: number, text: string) => {
@@ -74,53 +80,58 @@ export default function Home() {
   );
 
   const handleOpenAiKeyChange = useCallback(
-    (key: string) => {
+    async (key: string) => {
       setOpenAiKey(key);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("openAiKey", key); //実際は他の保存先を検討する
+      if (isBrowser) {
+        await setData("store", "apiKey", key);
       }
     }, 
-    []
+    [isBrowser]
   );
   
   const handleSystemPromptChange = useCallback(
     (systemPrompt: string) => {
       setSystemPrompt(systemPrompt);
-      if (typeof window !== "undefined") {
+      if (isBrowser) {
         localStorage.setItem("systemPrompt", systemPrompt);
       }
     }, 
-    []
+    [isBrowser]
   );
   
   const handleChangeKoeiroParam = useCallback(
     (param: KoeiroParam) => {
       setKoeiroParam(param);
-      if (typeof window !== "undefined") {
+      if (isBrowser) {
         localStorage.setItem("koeiroParam", JSON.stringify(param));
       }
     }, 
-    []
+    [isBrowser]
   );
   
   const handleChangeModel = useCallback(
     (model: string) => {
       setOpenAiModel(model);
-      if (typeof window !== "undefined") {
+      if (isBrowser) {
         localStorage.setItem("openAiModel", model);
       }
     }, 
-    []
+    [isBrowser]
   );
 
   const handleChangeVrmFile = useCallback(
     (vrmPath: string) => {
-      setLoadedVrmFile(vrmPath);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("loadedVrmFile", vrmPath);
+      if (vrmPath != "") {
+        setLoadedVrmFile(vrmPath);
+        if (isBrowser) {
+          localStorage.setItem("loadedVrmFile", vrmPath);
+        }
+      } else {
+        setLoadedVrmFile("/AvatarSample_B.vrm");
+        localStorage.setItem("loadedVrmFile", "");
       }
     }, 
-    []
+    [isBrowser]
   );
 
   /**
@@ -265,6 +276,7 @@ export default function Home() {
         koeiroParam={koeiroParam}
         assistantMessage={assistantMessage}
         openAiModel={openAiModel}
+        loadedVrmFile={loadedVrmFile}
         onChangeAiKey={handleOpenAiKeyChange}
         onChangeSystemPrompt={handleSystemPromptChange}
         onChangeChatLog={handleChangeChatLog}

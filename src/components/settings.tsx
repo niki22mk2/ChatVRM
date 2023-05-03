@@ -17,12 +17,14 @@ type Props = {
   chatLog: Message[];
   koeiroParam: KoeiroParam;
   openAiModel: string;
+  loadedVrmFile: string;
   onClickClose: () => void;
   onChangeAiKey: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onChangeSystemPrompt: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onChangeChatLog: (index: number, text: string) => void;
   onChangeKoeiroParam: (x: number, y: number) => void;
   onClickOpenVrmFile: () => void;
+  onClickDeleteVrmFile: () => void;
   onChangeModel: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 };
 export const Settings = ({
@@ -31,12 +33,14 @@ export const Settings = ({
   systemPrompt,
   koeiroParam,
   openAiModel,
+  loadedVrmFile,
   onClickClose,
   onChangeSystemPrompt,
   onChangeAiKey,
   onChangeChatLog,
   onChangeKoeiroParam,
   onClickOpenVrmFile,
+  onClickDeleteVrmFile,
   onChangeModel,
 }: Props) => {
   return (
@@ -69,9 +73,8 @@ export const Settings = ({
               で取得できます。取得したAPIキーをフォームに入力してください。
             </div>
           </div>
-          {/* モデル選択の追加箇所 */}
           <div className="my-16">
-            <div className="my-8 typography-20 font-bold">モデル選択</div>
+            <div className="my-8 typography-20 font-bold">OpenAI モデル選択</div>
             <select
               className="bg-surface1 hover:bg-surface1-hover rounded-8 px-16 py-8"
               value={openAiModel}
@@ -81,13 +84,16 @@ export const Settings = ({
               <option value="gpt-4">gpt-4</option>
             </select>
           </div>
-          {/* モデル選択の追加箇所ここまで */}
           <div className="my-40">
             <div className="my-16 typography-20 font-bold">
               キャラクターモデル
             </div>
+            <div>
+              現在読み込まれているモデル: {loadedVrmFile}
+            </div>
             <div className="my-8">
-              <TextButton onClick={onClickOpenVrmFile}>VRMを開く</TextButton>
+              <TextButton onClick={onClickOpenVrmFile} className="mr-8">VRMを開く</TextButton>
+              <TextButton onClick={onClickDeleteVrmFile} className="mr-8 bg-subtle hover:bg-subtle-hover">サンプルモデルに戻す</TextButton>
             </div>
           </div>
           <div className="my-40">

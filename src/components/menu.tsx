@@ -6,7 +6,7 @@ import React, { useCallback, useContext, useRef, useState } from "react";
 import { Settings } from "./settings";
 import { ViewerContext } from "@/features/vrmViewer/viewerContext";
 import { AssistantText } from "./assistantText";
-import { setData } from "@/utils/db";
+import { setData, deleteData } from "@/utils/db";
 
 type Props = {
   openAiKey: string;
@@ -15,6 +15,7 @@ type Props = {
   koeiroParam: KoeiroParam;
   assistantMessage: string;
   openAiModel: string;
+  loadedVrmFile: string;
   onChangeSystemPrompt: (systemPrompt: string) => void;
   onChangeAiKey: (key: string) => void;
   onChangeChatLog: (index: number, text: string) => void;
@@ -29,6 +30,7 @@ export const Menu = ({
   koeiroParam,
   assistantMessage,
   openAiModel,
+  loadedVrmFile,
   onChangeSystemPrompt,
   onChangeAiKey,
   onChangeChatLog,
@@ -49,7 +51,7 @@ export const Menu = ({
   );
 
   const handleAiKeyChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
       onChangeAiKey(event.target.value);
     },
     [onChangeAiKey]
@@ -69,6 +71,11 @@ export const Menu = ({
     fileInputRef.current?.click();
   }, []);
 
+  const handleClickDeleteVrmFile = useCallback(() => {
+    deleteData("store", loadedVrmFile);
+    onChangeVrmFile("");
+  }, [loadedVrmFile, onChangeVrmFile]);
+
   const handleChangeVrmFile = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const files = event.target.files;
@@ -84,7 +91,7 @@ export const Menu = ({
         const url = window.URL.createObjectURL(blob);
         viewer.loadVrm(url);
         
-        await setData("vrmFiles", file.name, file);
+        await setData("store", file.name, file);
         onChangeVrmFile(file.name);
       }
 
@@ -136,12 +143,14 @@ export const Menu = ({
           systemPrompt={systemPrompt}
           koeiroParam={koeiroParam}
           openAiModel={openAiModel}
+          loadedVrmFile={loadedVrmFile}
           onClickClose={() => setShowSettings(false)}
           onChangeAiKey={handleAiKeyChange}
           onChangeSystemPrompt={handleChangeSystemPrompt}
           onChangeChatLog={onChangeChatLog}
           onChangeKoeiroParam={handleChangeKoeiroParam}
           onClickOpenVrmFile={handleClickOpenVrmFile}
+          onClickDeleteVrmFile={handleClickDeleteVrmFile}
           onChangeModel={handleModelChange}
         />
       )}
