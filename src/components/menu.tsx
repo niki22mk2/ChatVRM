@@ -6,6 +6,7 @@ import React, { useCallback, useContext, useRef, useState } from "react";
 import { Settings } from "./settings";
 import { ViewerContext } from "@/features/vrmViewer/viewerContext";
 import { AssistantText } from "./assistantText";
+import { setData } from "@/utils/db";
 
 type Props = {
   openAiKey: string;
@@ -19,6 +20,7 @@ type Props = {
   onChangeChatLog: (index: number, text: string) => void;
   onChangeKoeiromapParam: (param: KoeiroParam) => void;
   onChangeModel: (model: string) => void;
+  onChangeVrmFile: (vrmPath: string) => void;
 };
 export const Menu = ({
   openAiKey,
@@ -32,6 +34,7 @@ export const Menu = ({
   onChangeChatLog,
   onChangeKoeiromapParam,
   onChangeModel,
+  onChangeVrmFile,
 }: Props) => {
   const [showSettings, setShowSettings] = useState(false);
   const [showChatLog, setShowChatLog] = useState(false);
@@ -67,7 +70,7 @@ export const Menu = ({
   }, []);
 
   const handleChangeVrmFile = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
       const files = event.target.files;
       if (!files) return;
 
@@ -80,11 +83,14 @@ export const Menu = ({
         const blob = new Blob([file], { type: "application/octet-stream" });
         const url = window.URL.createObjectURL(blob);
         viewer.loadVrm(url);
+        
+        await setData("vrmFiles", file.name, file);
+        onChangeVrmFile(file.name);
       }
 
       event.target.value = "";
     },
-    [viewer]
+    [viewer,onChangeVrmFile]
   );
 
   const handleModelChange = useCallback(

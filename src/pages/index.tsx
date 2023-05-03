@@ -47,9 +47,7 @@ export default function Home() {
   }, []);
 
   const [koeiroParam, setKoeiroParam] = useState<KoeiroParam>(
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("koeiroParam") || "null") || DEFAULT_PARAM
-      : DEFAULT_PARAM
+    typeof window !== "undefined" ? JSON.parse(localStorage.getItem("koeiroParam") || "null") || DEFAULT_PARAM : DEFAULT_PARAM
   );
   
   const [chatProcessing, setChatProcessing] = useState(false);
@@ -58,6 +56,10 @@ export default function Home() {
 
   const [openAiModel, setOpenAiModel] = useState(
     typeof window !== "undefined" ? localStorage.getItem("openAiModel") || "gpt-3.5-turbo" : "gpt-3.5-turbo"
+  );
+
+  const [loadedVrmFile, setLoadedVrmFile] = useState(
+    typeof window !== "undefined" ? localStorage.getItem("loadedVrmFile") || "/AvatarSample_B.vrm" : "/AvatarSample_B.vrm"
   );
 
   const handleChangeChatLog = useCallback(
@@ -94,7 +96,9 @@ export default function Home() {
   const handleChangeKoeiroParam = useCallback(
     (param: KoeiroParam) => {
       setKoeiroParam(param);
-      localStorage.setItem("koeiroParam", JSON.stringify(param));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("koeiroParam", JSON.stringify(param));
+      }
     }, 
     []
   );
@@ -102,11 +106,23 @@ export default function Home() {
   const handleChangeModel = useCallback(
     (model: string) => {
       setOpenAiModel(model);
-      localStorage.setItem("openAiModel", model);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("openAiModel", model);
+      }
     }, 
     []
   );
-  
+
+  const handleChangeVrmFile = useCallback(
+    (vrmPath: string) => {
+      setLoadedVrmFile(vrmPath);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("loadedVrmFile", vrmPath);
+      }
+    }, 
+    []
+  );
+
   /**
    * 文ごとに音声を直列でリクエストしながら再生する
    */
@@ -237,7 +253,7 @@ export default function Home() {
     <div className={`${m_plus_2.variable} ${montserrat.variable}`}>
       <Meta />
       {!openAiKey && <Introduction openAiKey={openAiKey} onChangeAiKey={handleOpenAiKeyChange} />}
-      <VrmViewer />
+      <VrmViewer VrmPath={loadedVrmFile} />
       <MessageInputContainer
         isChatProcessing={chatProcessing}
         onChatProcessStart={handleSendChat}
@@ -254,6 +270,7 @@ export default function Home() {
         onChangeChatLog={handleChangeChatLog}
         onChangeKoeiromapParam={handleChangeKoeiroParam}
         onChangeModel={handleChangeModel}
+        onChangeVrmFile={handleChangeVrmFile}
       />
       <GitHubLink />
     </div>

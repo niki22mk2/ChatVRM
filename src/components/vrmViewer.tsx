@@ -1,15 +1,33 @@
 import { useContext, useCallback } from "react";
 import { ViewerContext } from "../features/vrmViewer/viewerContext";
 import { buildUrl } from "@/utils/buildUrl";
+import { getData } from "@/utils/db";
 
-export default function VrmViewer() {
+type VrmViewerProps = {
+  VrmPath: string;
+};
+
+export default function VrmViewer({ 
+  VrmPath 
+}: VrmViewerProps) {
   const { viewer } = useContext(ViewerContext);
+
+  const loadVrm = useCallback(async () => {
+    const vrmFile = await getData("vrmFiles", VrmPath);
+
+    if (vrmFile) {
+      const url = URL.createObjectURL(vrmFile);
+      viewer.loadVrm(url);
+    } else {
+      viewer.loadVrm(buildUrl(VrmPath));
+    }
+  }, [VrmPath, viewer]);
 
   const canvasRef = useCallback(
     (canvas: HTMLCanvasElement) => {
       if (canvas) {
         viewer.setup(canvas);
-        viewer.loadVrm(buildUrl("/AvatarSample_B.vrm"));
+        loadVrm();
 
         // Drag and DropでVRMを差し替え
         canvas.addEventListener("dragover", function (event) {
@@ -38,7 +56,7 @@ export default function VrmViewer() {
         });
       }
     },
-    [viewer]
+    [viewer, loadVrm]
   );
 
   return (
