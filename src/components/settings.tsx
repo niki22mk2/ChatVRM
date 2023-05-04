@@ -24,7 +24,7 @@ type Props = {
   onChangeChatLog: (index: number, text: string) => void;
   onChangeKoeiroParam: (x: number, y: number) => void;
   onClickOpenVrmFile: () => void;
-  onClickDeleteVrmFile: () => void;
+  onClickResetVrmFile: () => void;
   onChangeModel: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 };
 export const Settings = ({
@@ -40,7 +40,7 @@ export const Settings = ({
   onChangeChatLog,
   onChangeKoeiroParam,
   onClickOpenVrmFile,
-  onClickDeleteVrmFile,
+  onClickResetVrmFile,
   onChangeModel,
 }: Props) => {
   return (
@@ -93,7 +93,7 @@ export const Settings = ({
             </div>
             <div className="my-8">
               <TextButton onClick={onClickOpenVrmFile} className="mr-8">VRMを開く</TextButton>
-              <TextButton onClick={onClickDeleteVrmFile} className="mr-8 bg-subtle hover:bg-subtle-hover">サンプルモデルに戻す</TextButton>
+              <TextButton onClick={onClickResetVrmFile} className="mr-8 bg-subtle hover:bg-subtle-hover">サンプルモデルに戻す</TextButton>
             </div>
           </div>
           <div className="my-40">

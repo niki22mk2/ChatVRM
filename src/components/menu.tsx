@@ -22,6 +22,7 @@ type Props = {
   onChangeKoeiromapParam: (param: KoeiroParam) => void;
   onChangeModel: (model: string) => void;
   onChangeVrmFile: (vrmPath: string) => void;
+  onResetVrmFile: () => void;
 };
 export const Menu = ({
   openAiKey,
@@ -37,6 +38,7 @@ export const Menu = ({
   onChangeKoeiromapParam,
   onChangeModel,
   onChangeVrmFile,
+  onResetVrmFile,
 }: Props) => {
   const [showSettings, setShowSettings] = useState(false);
   const [showChatLog, setShowChatLog] = useState(false);
@@ -71,10 +73,10 @@ export const Menu = ({
     fileInputRef.current?.click();
   }, []);
 
-  const handleClickDeleteVrmFile = useCallback(() => {
+  const handleClickResetVrmFile = useCallback(() => {
     deleteData("store", "vrm");
-    onChangeVrmFile("");
-  }, [onChangeVrmFile]);
+    onResetVrmFile();
+  }, [onResetVrmFile]);
 
   const handleChangeVrmFile = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -150,7 +152,7 @@ export const Menu = ({
           onChangeChatLog={onChangeChatLog}
           onChangeKoeiroParam={handleChangeKoeiroParam}
           onClickOpenVrmFile={handleClickOpenVrmFile}
-          onClickDeleteVrmFile={handleClickDeleteVrmFile}
+          onClickResetVrmFile={handleClickResetVrmFile}
           onChangeModel={handleModelChange}
         />
       )}

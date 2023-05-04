@@ -10,6 +10,7 @@ import { speakCharacter } from "@/features/messages/speakCharacter";
 import { MessageInputContainer } from "@/components/messageInputContainer";
 import { SYSTEM_PROMPT } from "@/features/constants/systemPromptConstants";
 import { KoeiroParam, DEFAULT_PARAM } from "@/features/constants/koeiroParam";
+import { DEFAULT_OPENAI_MODEL, DEFAULT_VRM_MODEL } from "@/features/constants/modelConstants";
 import { getChatResponseStream } from "@/features/chat/openAiChat";
 import { M_PLUS_2, Montserrat } from "next/font/google";
 import { Introduction } from "@/components/introduction";
@@ -48,11 +49,11 @@ export default function Home() {
   );
   
   const [openAiModel, setOpenAiModel] = useState(
-    isBrowser && localStorage.getItem("openAiModel") || "gpt-3.5-turbo"
+    isBrowser && localStorage.getItem("openAiModel") || DEFAULT_OPENAI_MODEL
   );
 
   const [loadedVrmFile, setLoadedVrmFile] = useState(
-    isBrowser && localStorage.getItem("loadedVrmFile") || "/AvatarSample_B.vrm"
+    isBrowser && localStorage.getItem("loadedVrmFile") || DEFAULT_VRM_MODEL
   );
 
   useEffect(() => {
@@ -121,17 +122,20 @@ export default function Home() {
 
   const handleChangeVrmFile = useCallback(
     (vrmPath: string) => {
-      if (vrmPath != "") {
-        setLoadedVrmFile(vrmPath);
-        if (isBrowser) {
-          localStorage.setItem("loadedVrmFile", vrmPath);
-        }
-      } else {
-        setLoadedVrmFile("/AvatarSample_B.vrm");
-        localStorage.setItem("loadedVrmFile", "");
+      setLoadedVrmFile(vrmPath);
+      if (isBrowser) {
+        localStorage.setItem("loadedVrmFile", vrmPath);
       }
     }, 
     [isBrowser]
+  );
+
+  const handleResetVrmFile = useCallback(
+    () => {
+      setLoadedVrmFile(DEFAULT_VRM_MODEL);
+      localStorage.setItem("loadedVrmFile", "");
+    }, 
+    []
   );
 
   /**
@@ -283,6 +287,7 @@ export default function Home() {
         onChangeKoeiromapParam={handleChangeKoeiroParam}
         onChangeModel={handleChangeModel}
         onChangeVrmFile={handleChangeVrmFile}
+        onResetVrmFile={handleResetVrmFile}
       />
       <GitHubLink />
     </div>
