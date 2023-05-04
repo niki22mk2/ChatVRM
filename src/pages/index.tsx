@@ -12,6 +12,7 @@ import { SYSTEM_PROMPT } from "@/features/constants/systemPromptConstants";
 import { KoeiroParam, DEFAULT_PARAM } from "@/features/constants/koeiroParam";
 import { DEFAULT_OPENAI_MODEL, DEFAULT_VRM_MODEL } from "@/features/constants/modelConstants";
 import { getChatResponseStream } from "@/features/chat/openAiChat";
+import { getChatResponseStreamLangChain } from "@/features/chat/langChainChat";
 import { M_PLUS_2, Montserrat } from "next/font/google";
 import { Introduction } from "@/components/introduction";
 import { Menu } from "@/components/menu";
@@ -54,6 +55,10 @@ export default function Home() {
 
   const [loadedVrmFile, setLoadedVrmFile] = useState(
     isBrowser && localStorage.getItem("loadedVrmFile") || DEFAULT_VRM_MODEL
+  );
+
+  const [customApiEndpoint, setCustomApiEndpoint] = useState(
+    isBrowser && localStorage.getItem("customApiEndpoint") || ""
   );
 
   useEffect(() => {
@@ -138,6 +143,16 @@ export default function Home() {
     []
   );
 
+  const handleSetCustomApiEndpoint = useCallback(
+    (endpoint: string) => {
+      setCustomApiEndpoint(endpoint);
+      if (isBrowser) {
+        localStorage.setItem("customApiEndpoint", endpoint);
+      }
+    },
+    [isBrowser]
+  );
+
   /**
    * 文ごとに音声を直列でリクエストしながら再生する
    */
@@ -157,7 +172,7 @@ export default function Home() {
    */
   const handleSendChat = useCallback(
     async (text: string) => {
-      if (!openAiKey) {
+      if (!openAiKey && customApiEndpoint === "") {
         setAssistantMessage("APIキーが入力されていません");
         return;
       }
@@ -183,12 +198,25 @@ export default function Home() {
         ...messageLog,
       ];
 
-      const stream = await getChatResponseStream(messages, openAiKey, openAiModel).catch(
-        (e) => {
-          console.error(e);
-          return null;
-        }
-      );
+      let stream: ReadableStream | null = null;
+
+      if (customApiEndpoint === "") {
+        stream = await getChatResponseStream(messages, openAiKey, openAiModel).catch(
+          (e) => {
+            console.error(e);
+            return null;
+          }
+        );
+      } else {
+        console.log("customApiEndpoint", customApiEndpoint)
+        stream = await getChatResponseStreamLangChain(messages, customApiEndpoint).catch(
+          (e) => {
+            console.error(e);
+            return null;
+          }
+        );
+      }
+
       if (stream == null) {
         setChatProcessing(false);
         return;
@@ -261,7 +289,7 @@ export default function Home() {
       setChatLog(messageLogAssistant);
       setChatProcessing(false);
     },
-    [systemPrompt, chatLog, handleSpeakAi, openAiKey, koeiroParam, openAiModel]
+    [systemPrompt, chatLog, handleSpeakAi, openAiKey, koeiroParam, openAiModel, customApiEndpoint]
   );
 
   return (
@@ -281,6 +309,7 @@ export default function Home() {
         assistantMessage={assistantMessage}
         openAiModel={openAiModel}
         loadedVrmFile={loadedVrmFile}
+        customApiEndpoint={customApiEndpoint}
         onChangeAiKey={handleOpenAiKeyChange}
         onChangeSystemPrompt={handleSystemPromptChange}
         onChangeChatLog={handleChangeChatLog}
@@ -288,6 +317,7 @@ export default function Home() {
         onChangeModel={handleChangeModel}
         onChangeVrmFile={handleChangeVrmFile}
         onResetVrmFile={handleResetVrmFile}
+        onSetCustomApiEndpoint={handleSetCustomApiEndpoint}
       />
       <GitHubLink />
     </div>

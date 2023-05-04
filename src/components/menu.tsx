@@ -16,6 +16,7 @@ type Props = {
   assistantMessage: string;
   openAiModel: string;
   loadedVrmFile: string;
+  customApiEndpoint: string;
   onChangeSystemPrompt: (systemPrompt: string) => void;
   onChangeAiKey: (key: string) => void;
   onChangeChatLog: (index: number, text: string) => void;
@@ -23,6 +24,7 @@ type Props = {
   onChangeModel: (model: string) => void;
   onChangeVrmFile: (vrmPath: string) => void;
   onResetVrmFile: () => void;
+  onSetCustomApiEndpoint: (endpoint: string) => void;
 };
 export const Menu = ({
   openAiKey,
@@ -32,6 +34,7 @@ export const Menu = ({
   assistantMessage,
   openAiModel,
   loadedVrmFile,
+  customApiEndpoint,
   onChangeSystemPrompt,
   onChangeAiKey,
   onChangeChatLog,
@@ -39,6 +42,7 @@ export const Menu = ({
   onChangeModel,
   onChangeVrmFile,
   onResetVrmFile,
+  onSetCustomApiEndpoint
 }: Props) => {
   const [showSettings, setShowSettings] = useState(false);
   const [showChatLog, setShowChatLog] = useState(false);
@@ -57,6 +61,13 @@ export const Menu = ({
       onChangeAiKey(event.target.value);
     },
     [onChangeAiKey]
+  );
+
+  const handleSetCustomApiEndpoint = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      onSetCustomApiEndpoint(event.target.value);
+    },
+    [onSetCustomApiEndpoint]
   );
 
   const handleChangeKoeiroParam = useCallback(
@@ -146,6 +157,7 @@ export const Menu = ({
           koeiroParam={koeiroParam}
           openAiModel={openAiModel}
           loadedVrmFile={loadedVrmFile}
+          customApiEndpoint={customApiEndpoint}
           onClickClose={() => setShowSettings(false)}
           onChangeAiKey={handleAiKeyChange}
           onChangeSystemPrompt={handleChangeSystemPrompt}
@@ -154,6 +166,7 @@ export const Menu = ({
           onClickOpenVrmFile={handleClickOpenVrmFile}
           onClickResetVrmFile={handleClickResetVrmFile}
           onChangeModel={handleModelChange}
+          onSetCustomApiEndpoint={handleSetCustomApiEndpoint}
         />
       )}
       {!showChatLog && assistantMessage && (
