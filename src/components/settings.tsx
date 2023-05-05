@@ -77,7 +77,7 @@ export const Settings = ({
               onChange={handleApiEndpointChange}
             >
               <option value="openai">OpenAI</option>
-              <option value="langchain">LangChain</option>
+              <option value="custom">Custom</option>
             </select>
           </div>
           {apiEndpoint === "openai" ? (
@@ -100,10 +100,10 @@ export const Settings = ({
             </div>
           </div>
           ) : (
-            <div className="my-24">
+          <div className="my-24">
             <div className="my-16 typography-20 font-bold">カスタムエンドポイント</div>
             <input
-              className="text-ellipsis px-16 py-8 w-col-span-2 bg-surface1 hover:bg-surface1-hover rounded-8"
+              className="text-ellipsis px-16 py-8 w-col-span-3 bg-surface1 hover:bg-surface1-hover rounded-8"
               type="text"
               placeholder="http://..."
               value={customApiEndpoint}
@@ -111,7 +111,7 @@ export const Settings = ({
             />
           </div>
           )}
-    
+          {apiEndpoint === "openai" && (
           <div className="my-16">
             <div className="my-8 typography-20 font-bold">OpenAI モデル選択</div>
             <select
@@ -123,6 +123,7 @@ export const Settings = ({
               <option value="gpt-4">gpt-4</option>
             </select>
           </div>
+          )}
           <div className="my-40">
             <div className="my-16 typography-20 font-bold">
               キャラクターモデル

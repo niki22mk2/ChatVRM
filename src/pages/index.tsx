@@ -187,13 +187,11 @@ export default function Home() {
         ...chatLog,
         { role: "user", content: newMessage },
       ];
-      setChatLog(messageLog);
 
-      // Chat GPTへ
       const messages: Message[] = [
         {
           role: "system",
-          content: systemPrompt,
+          content: customApiEndpoint === "" ? systemPrompt : systemPrompt.replace(/{/g, '{{').replace(/}/g, '}}'),
         },
         ...messageLog,
       ];
@@ -216,6 +214,7 @@ export default function Home() {
           }
         );
       }
+      setChatLog(messageLog);
 
       if (stream == null) {
         setChatProcessing(false);
@@ -279,14 +278,18 @@ export default function Home() {
       } finally {
         reader.releaseLock();
       }
-
-      // アシスタントの返答をログに追加
-      const messageLogAssistant: Message[] = [
-        ...messageLog,
-        { role: "assistant", content: aiTextLog },
-      ];
-
-      setChatLog(messageLogAssistant);
+      
+      if (aiTextLog.length > 0) {
+        // アシスタントの返答をログに追加
+        const messageLogAssistant: Message[] = [
+          ...messageLog,
+          { role: "assistant", content: aiTextLog },
+        ];
+        setChatLog(messageLogAssistant);
+      } else {
+        // 返答がなかった場合はユーザメッセージを削除
+        setChatLog(chatLog.slice(0, -1))
+      }
       setChatProcessing(false);
     },
     [systemPrompt, chatLog, handleSpeakAi, openAiKey, koeiroParam, openAiModel, customApiEndpoint]

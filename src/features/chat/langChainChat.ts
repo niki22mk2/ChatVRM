@@ -12,7 +12,7 @@ export async function getChatResponseStreamLangChain(
     headers: headers,
     method: "POST",
     body: JSON.stringify({
-      message: messages,
+      messages: messages,
     }),
   });
 
