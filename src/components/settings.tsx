@@ -29,6 +29,7 @@ type Props = {
   onClickResetVrmFile: () => void;
   onChangeModel: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   onSetCustomApiEndpoint: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onRefreshVrmViewer: () => void;
 };
 export const Settings = ({
   openAiKey,
@@ -47,6 +48,7 @@ export const Settings = ({
   onClickResetVrmFile,
   onChangeModel,
   onSetCustomApiEndpoint,
+  onRefreshVrmViewer
 }: Props) => {
 
   const [apiEndpoint, setApiEndpoint] = useState(
@@ -251,6 +253,21 @@ export const Settings = ({
               </div>
             </div>
           )}
+          <div className="my-40">
+            <div className="my-16 typography-20 font-bold">
+              非常用
+            </div>
+            <div className="my-8">
+              <TextButton
+                onClick={() => {
+                  onClickClose();
+                  onRefreshVrmViewer();
+                }}
+                className="mr-8 bg-subtle hover:bg-subtle-hover">
+                VRM再読み込み
+              </TextButton>
+            </div>
+          </div>        
         </div>
       </div>
     </div>

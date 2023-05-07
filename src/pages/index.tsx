@@ -61,6 +61,8 @@ export default function Home() {
     isBrowser && localStorage.getItem("customApiEndpoint") || ""
   );
 
+  const [vrmViewerKey, setVrmViewerKey] = useState(0);
+
   useEffect(() => {
     async function fetchOpenAiKey() {
       if (isBrowser) {
@@ -152,6 +154,10 @@ export default function Home() {
     },
     [isBrowser]
   );
+
+  const handleRefreshVrmViewer = () => {
+    setVrmViewerKey((prevKey) => prevKey + 1);
+  };
 
   /**
    * 文ごとに音声を直列でリクエストしながら再生する
@@ -299,7 +305,7 @@ export default function Home() {
     <div className={`${m_plus_2.variable} ${montserrat.variable}`}>
       <Meta />
       {!openAiKey && <Introduction openAiKey={openAiKey} onChangeAiKey={handleOpenAiKeyChange} />}
-      <VrmViewer VrmPath={loadedVrmFile} />
+      <VrmViewer key={vrmViewerKey} VrmPath={loadedVrmFile} />
       <MessageInputContainer
         isChatProcessing={chatProcessing}
         onChatProcessStart={handleSendChat}
@@ -321,6 +327,7 @@ export default function Home() {
         onChangeVrmFile={handleChangeVrmFile}
         onResetVrmFile={handleResetVrmFile}
         onSetCustomApiEndpoint={handleSetCustomApiEndpoint}
+        onRefreshVrmViewer={handleRefreshVrmViewer}
       />
       <GitHubLink />
     </div>

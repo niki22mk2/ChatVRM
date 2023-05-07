@@ -25,6 +25,7 @@ type Props = {
   onChangeVrmFile: (vrmPath: string) => void;
   onResetVrmFile: () => void;
   onSetCustomApiEndpoint: (endpoint: string) => void;
+  onRefreshVrmViewer: () => void;
 };
 export const Menu = ({
   openAiKey,
@@ -42,7 +43,8 @@ export const Menu = ({
   onChangeModel,
   onChangeVrmFile,
   onResetVrmFile,
-  onSetCustomApiEndpoint
+  onSetCustomApiEndpoint,
+  onRefreshVrmViewer
 }: Props) => {
   const [showSettings, setShowSettings] = useState(false);
   const [showChatLog, setShowChatLog] = useState(false);
@@ -167,6 +169,7 @@ export const Menu = ({
           onClickResetVrmFile={handleClickResetVrmFile}
           onChangeModel={handleModelChange}
           onSetCustomApiEndpoint={handleSetCustomApiEndpoint}
+          onRefreshVrmViewer={onRefreshVrmViewer}
         />
       )}
       {!showChatLog && assistantMessage && (
