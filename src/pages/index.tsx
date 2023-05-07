@@ -207,7 +207,7 @@ export default function Home() {
         );
       } else {
         console.log("customApiEndpoint", customApiEndpoint)
-        stream = await getChatResponseStreamLangChain(messages, customApiEndpoint).catch(
+        stream = await getChatResponseStreamLangChain(messages, customApiEndpoint, openAiModel).catch(
           (e) => {
             console.error(e);
             return null;
@@ -239,10 +239,10 @@ export default function Home() {
             tag = tagMatch[0];
             receivedMessage = receivedMessage.slice(tag.length);
           }
-
+          console.log(receivedMessage)
           // 返答を一文単位で切り出して処理する
           const sentenceMatch = receivedMessage.match(
-            /^(.+[。．！？\n]|.{10,}[、,])/
+            /^(.+[。．！？♪\n]|.{10,}[、,])/
           );
           if (sentenceMatch && sentenceMatch[0]) {
             const sentence = sentenceMatch[0];

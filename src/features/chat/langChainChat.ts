@@ -2,7 +2,8 @@ import { Message } from "../messages/messages";
 
 export async function getChatResponseStreamLangChain(
   messages: Message[],
-  customApiEndpoint: string
+  customApiEndpoint: string,
+  openAiModel: string
 ) {
 
   const headers: Record<string, string> = {
@@ -13,6 +14,8 @@ export async function getChatResponseStreamLangChain(
     method: "POST",
     body: JSON.stringify({
       messages: messages,
+      model: openAiModel,
+      max_tokens: 200,
     }),
   });
 

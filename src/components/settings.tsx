@@ -111,7 +111,6 @@ export const Settings = ({
             />
           </div>
           )}
-          {apiEndpoint === "openai" && (
           <div className="my-16">
             <div className="my-8 typography-20 font-bold">OpenAI モデル選択</div>
             <select
@@ -123,7 +122,6 @@ export const Settings = ({
               <option value="gpt-4">gpt-4</option>
             </select>
           </div>
-          )}
           <div className="my-40">
             <div className="my-16 typography-20 font-bold">
               キャラクターモデル
