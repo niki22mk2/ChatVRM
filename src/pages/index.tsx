@@ -202,6 +202,13 @@ export default function Home() {
         ...messageLog,
       ];
 
+
+      let waitingTimeout;
+      const waitingMessage = ["[neutral] えっと", "[relaxed] ちょっと待ってね", "[relaxed] ふむ、ふむ", "[happy] むむむ"];
+      waitingTimeout = setTimeout(() => {
+        handleSpeakAi(textsToScreenplay([waitingMessage[Math.floor(Math.random() * waitingMessage.length)]], koeiroParam)[0], () => {});
+      }, 5000);
+
       let stream: ReadableStream | null = null;
 
       if (customApiEndpoint === "") {
@@ -227,6 +234,7 @@ export default function Home() {
         return;
       }
 
+
       const reader = stream.getReader();
       let receivedMessage = "";
       let aiTextLog = "";
@@ -236,7 +244,7 @@ export default function Home() {
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-
+          clearTimeout(waitingTimeout);
           receivedMessage += value;
 
           // 返答内容のタグ部分の検出
@@ -283,6 +291,7 @@ export default function Home() {
         console.error(e);
       } finally {
         reader.releaseLock();
+        clearTimeout(waitingTimeout);
       }
       
       if (aiTextLog.length > 0) {
