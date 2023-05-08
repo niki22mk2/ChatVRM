@@ -3,7 +3,10 @@ import { Message } from "../messages/messages";
 export async function getChatResponseStreamLangChain(
   messages: Message[],
   customApiEndpoint: string,
-  openAiModel: string
+  openAiKey: string, 
+  openAiModel: string,
+  aiName: string,
+  humanName: string
 ) {
 
   const headers: Record<string, string> = {
@@ -16,6 +19,8 @@ export async function getChatResponseStreamLangChain(
       messages: messages,
       model: openAiModel,
       max_tokens: 200,
+      ai_name: aiName,
+      human_name: humanName
     }),
   });
 
@@ -34,7 +39,7 @@ export async function getChatResponseStreamLangChain(
           const data = decoder.decode(value);
           const chunks = data
             .split("data:")
-            .filter((val) => !!val && val.trim() !== "[DONE]");
+            .filter((val) => !!val && val.trim() !== "[DONE]" && !val.trim().startsWith(": ping"));        
           for (const chunk of chunks) {
             const json = JSON.parse(chunk);
             const messagePiece = json.choices[0].delta.content;

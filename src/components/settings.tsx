@@ -15,6 +15,8 @@ import { Link } from "./link";
 type Props = {
   openAiKey: string;
   systemPrompt: string;
+  aiName: string;
+  humanName: string;
   chatLog: Message[];
   koeiroParam: KoeiroParam;
   openAiModel: string;
@@ -23,6 +25,8 @@ type Props = {
   onClickClose: () => void;
   onChangeAiKey: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onChangeSystemPrompt: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onChangeAiName: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChangeHumanName: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onChangeChatLog: (index: number, text: string) => void;
   onChangeKoeiroParam: (x: number, y: number) => void;
   onClickOpenVrmFile: () => void;
@@ -35,12 +39,16 @@ export const Settings = ({
   openAiKey,
   chatLog,
   systemPrompt,
+  aiName,
+  humanName,
   koeiroParam,
   openAiModel,
   loadedVrmFile,
   customApiEndpoint,
   onClickClose,
   onChangeSystemPrompt,
+  onChangeAiName,
+  onChangeHumanName,
   onChangeAiKey,
   onChangeChatLog,
   onChangeKoeiroParam,
@@ -140,12 +148,32 @@ export const Settings = ({
             <div className="my-16 typography-20 font-bold">
               キャラクター設定（システムプロンプト）
             </div>
-
+            <div className="flex items-center gap-4">
+              <label className="w-[17%]">AI NAME</label>
+              <input
+                className="text-ellipsis px-16 py-8 my-4 w-col-span-2 bg-surface1 hover:bg-surface1-hover rounded-8"
+                type="text"
+                placeholder="AI"
+                value={aiName}
+                onChange={onChangeAiName}
+              />
+            </div>
+            <div className="flex items-center gap-4">
+              <label className="w-[17%]">HUMAN NAME</label>
+              <input
+                className="text-ellipsis px-16 py-8 my-4 w-col-span-2 bg-surface1 hover:bg-surface1-hover rounded-8"
+                type="text"
+                placeholder="Human"
+                value={humanName}
+                onChange={onChangeHumanName}
+              />
+            </div>
             <textarea
               value={systemPrompt}
               onChange={onChangeSystemPrompt}
               className="px-16 py-8  bg-surface1 hover:bg-surface1-hover h-168 rounded-8 w-full"
             ></textarea>
+
           </div>
           <div className="my-40">
             <div className="my-16 typography-20 font-bold">声の調整</div>

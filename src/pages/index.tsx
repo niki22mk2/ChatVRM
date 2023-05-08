@@ -49,6 +49,15 @@ export default function Home() {
     isBrowser && localStorage.getItem("systemPrompt") || SYSTEM_PROMPT
   );
   
+  const [aiName, setAiName] = useState(
+    isBrowser && localStorage.getItem("aiName") || "AI"
+  );
+
+  const [humanName, setHumanName] = useState(
+    isBrowser && localStorage.getItem("humanName") || "Human"
+  );
+
+
   const [openAiModel, setOpenAiModel] = useState(
     isBrowser && localStorage.getItem("openAiModel") || DEFAULT_OPENAI_MODEL
   );
@@ -106,7 +115,28 @@ export default function Home() {
     }, 
     [isBrowser]
   );
+
+  const handleAiNameChange = useCallback(
+    (aiName: string) => {
+      setAiName(aiName);
+      if (isBrowser) {
+        localStorage.setItem("aiName", aiName);
+      }
+    }, 
+    [isBrowser]
+  );
+
+  const handleHumanNameChange = useCallback(
+    (humanName: string) => {
+      setHumanName(humanName);
+      if (isBrowser) {
+        localStorage.setItem("humanName", humanName);
+      }
+    }, 
+    [isBrowser]
+  );
   
+
   const handleChangeKoeiroParam = useCallback(
     (param: KoeiroParam) => {
       setKoeiroParam(param);
@@ -220,7 +250,7 @@ export default function Home() {
         );
       } else {
         console.log("customApiEndpoint", customApiEndpoint)
-        stream = await getChatResponseStreamLangChain(messages, customApiEndpoint, openAiModel).catch(
+        stream = await getChatResponseStreamLangChain(messages, customApiEndpoint, openAiKey, openAiModel, aiName, humanName).catch(
           (e) => {
             console.error(e);
             return null;
@@ -307,7 +337,7 @@ export default function Home() {
       }
       setChatProcessing(false);
     },
-    [systemPrompt, chatLog, handleSpeakAi, openAiKey, koeiroParam, openAiModel, customApiEndpoint]
+    [systemPrompt, chatLog, handleSpeakAi, openAiKey, koeiroParam, openAiModel, customApiEndpoint, aiName, humanName]
   );
 
   return (
@@ -322,6 +352,8 @@ export default function Home() {
       <Menu
         openAiKey={openAiKey}
         systemPrompt={systemPrompt}
+        humanName={humanName}
+        aiName={aiName}
         chatLog={chatLog}
         koeiroParam={koeiroParam}
         assistantMessage={assistantMessage}
@@ -330,6 +362,8 @@ export default function Home() {
         customApiEndpoint={customApiEndpoint}
         onChangeAiKey={handleOpenAiKeyChange}
         onChangeSystemPrompt={handleSystemPromptChange}
+        onChangeHumanName={handleHumanNameChange}
+        onChangeAiName={handleAiNameChange}
         onChangeChatLog={handleChangeChatLog}
         onChangeKoeiromapParam={handleChangeKoeiroParam}
         onChangeModel={handleChangeModel}

@@ -11,6 +11,8 @@ import { setData, deleteData } from "@/utils/db";
 type Props = {
   openAiKey: string;
   systemPrompt: string;
+  aiName: string;
+  humanName: string;
   chatLog: Message[];
   koeiroParam: KoeiroParam;
   assistantMessage: string;
@@ -18,6 +20,8 @@ type Props = {
   loadedVrmFile: string;
   customApiEndpoint: string;
   onChangeSystemPrompt: (systemPrompt: string) => void;
+  onChangeHumanName: (humanName: string) => void;
+  onChangeAiName: (aiName: string) => void;
   onChangeAiKey: (key: string) => void;
   onChangeChatLog: (index: number, text: string) => void;
   onChangeKoeiromapParam: (param: KoeiroParam) => void;
@@ -30,6 +34,8 @@ type Props = {
 export const Menu = ({
   openAiKey,
   systemPrompt,
+  aiName,
+  humanName,
   chatLog,
   koeiroParam,
   assistantMessage,
@@ -37,6 +43,8 @@ export const Menu = ({
   loadedVrmFile,
   customApiEndpoint,
   onChangeSystemPrompt,
+  onChangeAiName,
+  onChangeHumanName,
   onChangeAiKey,
   onChangeChatLog,
   onChangeKoeiromapParam,
@@ -56,6 +64,20 @@ export const Menu = ({
       onChangeSystemPrompt(event.target.value);
     },
     [onChangeSystemPrompt]
+  );
+
+  const handleChangeAiName = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      onChangeAiName(event.target.value);
+    },
+    [onChangeAiName]
+  );
+
+  const handleChangeHumanName = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      onChangeHumanName(event.target.value);
+    },
+    [onChangeHumanName]
   );
 
   const handleAiKeyChange = useCallback(
@@ -156,6 +178,8 @@ export const Menu = ({
           openAiKey={openAiKey}
           chatLog={chatLog}
           systemPrompt={systemPrompt}
+          aiName={aiName}
+          humanName={humanName}
           koeiroParam={koeiroParam}
           openAiModel={openAiModel}
           loadedVrmFile={loadedVrmFile}
@@ -163,6 +187,8 @@ export const Menu = ({
           onClickClose={() => setShowSettings(false)}
           onChangeAiKey={handleAiKeyChange}
           onChangeSystemPrompt={handleChangeSystemPrompt}
+          onChangeAiName={handleChangeAiName}
+          onChangeHumanName={handleChangeHumanName}
           onChangeChatLog={onChangeChatLog}
           onChangeKoeiroParam={handleChangeKoeiroParam}
           onClickOpenVrmFile={handleClickOpenVrmFile}
