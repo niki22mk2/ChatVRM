@@ -34,6 +34,8 @@ const montserrat = Montserrat({
 
 export default function Home() {
   const isBrowser = typeof window !== "undefined";
+  const [isKeyLoaded, setIsKeyLoaded] = useState(false);
+
   const { viewer } = useContext(ViewerContext);
 
   const [openAiKey, setOpenAiKey] = useState("");
@@ -41,49 +43,33 @@ export default function Home() {
   const [chatLog, setChatLog] = useState<Message[]>([]);
   const [assistantMessage, setAssistantMessage] = useState("");
 
-  const [koeiroParam, setKoeiroParam] = useState<KoeiroParam>(
-    isBrowser && (JSON.parse(localStorage.getItem("koeiroParam") || "null") || DEFAULT_PARAM)
-  );
-  
-  const [systemPrompt, setSystemPrompt] = useState(
-    isBrowser && localStorage.getItem("systemPrompt") || SYSTEM_PROMPT
-  );
-  
-  const [aiName, setAiName] = useState(
-    isBrowser && localStorage.getItem("aiName") || "AI"
-  );
-
-  const [humanName, setHumanName] = useState(
-    isBrowser && localStorage.getItem("humanName") || "Human"
-  );
-
-
-  const [openAiModel, setOpenAiModel] = useState(
-    isBrowser && localStorage.getItem("openAiModel") || DEFAULT_OPENAI_MODEL
-  );
-
-  const [loadedVrmFile, setLoadedVrmFile] = useState(
-    isBrowser && localStorage.getItem("loadedVrmFile") || DEFAULT_VRM_MODEL
-  );
-
-  const [customApiEndpoint, setCustomApiEndpoint] = useState(
-    isBrowser && localStorage.getItem("customApiEndpoint") || ""
-  );
+  const [koeiroParam, setKoeiroParam] = useState<KoeiroParam>(DEFAULT_PARAM);
+  const [systemPrompt, setSystemPrompt] = useState(SYSTEM_PROMPT);
+  const [aiName, setAiName] = useState("AI");
+  const [humanName, setHumanName] = useState("Human");
+  const [openAiModel, setOpenAiModel] = useState(DEFAULT_OPENAI_MODEL);
+  const [loadedVrmFile, setLoadedVrmFile] = useState(DEFAULT_VRM_MODEL);
+  const [customApiEndpoint, setCustomApiEndpoint] = useState("");
 
   const [vrmViewerKey, setVrmViewerKey] = useState(0);
-
-  useEffect(() => {
-    async function fetchOpenAiKey() {
-      if (isBrowser) {
-        const storedOpenAiKey = await getData("store", "apiKey");
-        if (storedOpenAiKey) {
-          setOpenAiKey(storedOpenAiKey);
-        }
-      }
-    }
-    fetchOpenAiKey();
-  }, [isBrowser]);
   
+  useEffect(() => {
+    if (isBrowser) {
+      (async () => {
+        const storedOpenAiKey = await getData("store", "apiKey");
+        if (storedOpenAiKey) setOpenAiKey(storedOpenAiKey);
+        setIsKeyLoaded(true);
+      })();
+
+      setKoeiroParam(JSON.parse(localStorage.getItem("koeiroParam") || "null") || DEFAULT_PARAM);
+      setSystemPrompt(localStorage.getItem("systemPrompt") || SYSTEM_PROMPT);
+      setAiName(localStorage.getItem("aiName") || "AI");
+      setHumanName(localStorage.getItem("humanName") || "Human");
+      setOpenAiModel(localStorage.getItem("openAiModel") || DEFAULT_OPENAI_MODEL);
+      setLoadedVrmFile(localStorage.getItem("loadedVrmFile") || DEFAULT_VRM_MODEL);
+      setCustomApiEndpoint(localStorage.getItem("customApiEndpoint") || "");
+    }
+  }, [isBrowser]);  
 
   const handleChangeChatLog = useCallback(
     (targetIndex: number, text: string) => {
@@ -96,94 +82,50 @@ export default function Home() {
     [chatLog]
   );
 
-  const handleOpenAiKeyChange = useCallback(
-    async (key: string) => {
-      setOpenAiKey(key);
-      if (isBrowser) {
-        await setData("store", "apiKey", key);
-      }
-    }, 
-    [isBrowser]
-  );
-  
-  const handleSystemPromptChange = useCallback(
-    (systemPrompt: string) => {
-      setSystemPrompt(systemPrompt);
-      if (isBrowser) {
-        localStorage.setItem("systemPrompt", systemPrompt);
-      }
-    }, 
-    [isBrowser]
-  );
+  const handleOpenAiKeyChange = useCallback(async (key: string) => {
+    setOpenAiKey(key);
+    await setData("store", "apiKey", key);
+  }, []);
 
-  const handleAiNameChange = useCallback(
-    (aiName: string) => {
-      setAiName(aiName);
-      if (isBrowser) {
-        localStorage.setItem("aiName", aiName);
-      }
-    }, 
-    [isBrowser]
-  );
+  const handleSystemPromptChange = useCallback((systemPrompt: string) => {
+    setSystemPrompt(systemPrompt);
+    localStorage.setItem("systemPrompt", systemPrompt);
+  }, []);
 
-  const handleHumanNameChange = useCallback(
-    (humanName: string) => {
-      setHumanName(humanName);
-      if (isBrowser) {
-        localStorage.setItem("humanName", humanName);
-      }
-    }, 
-    [isBrowser]
-  );
-  
+  const handleAiNameChange = useCallback((aiName: string) => {
+    setAiName(aiName);
+    localStorage.setItem("aiName", aiName);
+  }, []);
 
-  const handleChangeKoeiroParam = useCallback(
-    (param: KoeiroParam) => {
-      setKoeiroParam(param);
-      if (isBrowser) {
-        localStorage.setItem("koeiroParam", JSON.stringify(param));
-      }
-    }, 
-    [isBrowser]
-  );
-  
-  const handleChangeModel = useCallback(
-    (model: string) => {
-      setOpenAiModel(model);
-      if (isBrowser) {
-        localStorage.setItem("openAiModel", model);
-      }
-    }, 
-    [isBrowser]
-  );
+  const handleHumanNameChange = useCallback((humanName: string) => {
+    setHumanName(humanName);
+    localStorage.setItem("humanName", humanName);
+  }, []);
 
-  const handleChangeVrmFile = useCallback(
-    (vrmPath: string) => {
-      setLoadedVrmFile(vrmPath);
-      if (isBrowser) {
-        localStorage.setItem("loadedVrmFile", vrmPath);
-      }
-    }, 
-    [isBrowser]
-  );
+  const handleChangeKoeiroParam = useCallback((param: KoeiroParam) => {
+    setKoeiroParam(param);
+    localStorage.setItem("koeiroParam", JSON.stringify(param));
+  }, []);
 
-  const handleResetVrmFile = useCallback(
-    () => {
-      setLoadedVrmFile(DEFAULT_VRM_MODEL);
-      localStorage.setItem("loadedVrmFile", "");
-    }, 
-    []
-  );
+  const handleChangeModel = useCallback((model: string) => {
+    setOpenAiModel(model);
+    localStorage.setItem("openAiModel", model);
+  }, []);
 
-  const handleSetCustomApiEndpoint = useCallback(
-    (endpoint: string) => {
-      setCustomApiEndpoint(endpoint);
-      if (isBrowser) {
-        localStorage.setItem("customApiEndpoint", endpoint);
-      }
-    },
-    [isBrowser]
-  );
+  const handleChangeVrmFile = useCallback((vrmPath: string) => {
+    setLoadedVrmFile(vrmPath);
+    localStorage.setItem("loadedVrmFile", vrmPath);
+  }, []);
+
+  const handleResetVrmFile = useCallback(() => {
+    setLoadedVrmFile(DEFAULT_VRM_MODEL);
+    localStorage.setItem("loadedVrmFile", "");
+  },[]);
+
+  const handleSetCustomApiEndpoint = useCallback((endpoint: string) => {
+    setCustomApiEndpoint(endpoint);
+    localStorage.setItem("customApiEndpoint", endpoint);
+  }, []);
 
   const handleRefreshVrmViewer = () => {
     setVrmViewerKey((prevKey) => prevKey + 1);
@@ -343,7 +285,9 @@ export default function Home() {
   return (
     <div className={`${m_plus_2.variable} ${montserrat.variable}`}>
       <Meta />
-      {!openAiKey && <Introduction openAiKey={openAiKey} onChangeAiKey={handleOpenAiKeyChange} />}
+      {!openAiKey && isKeyLoaded && (
+      <Introduction openAiKey={openAiKey} onChangeAiKey={handleOpenAiKeyChange} />
+      )}
       <VrmViewer key={vrmViewerKey} VrmPath={loadedVrmFile} />
       <MessageInputContainer
         isChatProcessing={chatProcessing}

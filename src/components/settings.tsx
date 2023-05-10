@@ -80,7 +80,7 @@ export const Settings = ({
         <div className="text-text1 max-w-3xl mx-auto px-24 py-64 ">
           <div className="my-24 typography-32 font-bold">設定</div>
           <div className="my-24">
-            <div className="my-16 typography-20 font-bold">APIエンドポイント選択</div>
+            <div className="my-16 typography-20 font-bold">API</div>
             <select
               className="bg-surface1 hover:bg-surface1-hover rounded-8 px-16 py-8"
               value={apiEndpoint}
@@ -92,9 +92,9 @@ export const Settings = ({
           </div>
           {apiEndpoint === "openai" ? (
           <div className="my-24">
-            <div className="my-16 typography-20 font-bold">OpenAI API キー</div>
+            <div className="my-8 typography-10">API キー</div>
             <input
-              className="text-ellipsis px-16 py-8 w-col-span-2 bg-surface1 hover:bg-surface1-hover rounded-8"
+              className="text-ellipsis px-16 py-4 w-col-span-3 bg-surface1 hover:bg-surface1-hover rounded-8"
               type="text"
               placeholder="sk-..."
               value={openAiKey}
@@ -111,9 +111,9 @@ export const Settings = ({
           </div>
           ) : (
           <div className="my-24">
-            <div className="my-16 typography-20 font-bold">カスタムエンドポイント</div>
+            <div className="my-8 typography-10">エンドポイントURL</div>
             <input
-              className="text-ellipsis px-16 py-8 w-col-span-3 bg-surface1 hover:bg-surface1-hover rounded-8"
+              className="text-ellipsis px-16 py-4 w-col-span-3 bg-surface1 hover:bg-surface1-hover rounded-8"
               type="text"
               placeholder="http://..."
               value={customApiEndpoint}
@@ -122,9 +122,9 @@ export const Settings = ({
           </div>
           )}
           <div className="my-16">
-            <div className="my-8 typography-20 font-bold">OpenAI モデル選択</div>
+            <div className="my-8 typography-10">モデル</div>
             <select
-              className="bg-surface1 hover:bg-surface1-hover rounded-8 px-16 py-8"
+              className="bg-surface1 hover:bg-surface1-hover rounded-8 px-16 py-4"
               value={openAiModel}
               onChange={onChangeModel}
             >
@@ -148,26 +148,30 @@ export const Settings = ({
             <div className="my-16 typography-20 font-bold">
               キャラクター設定（システムプロンプト）
             </div>
-            <div className="flex items-center gap-4">
-              <label className="w-[17%]">AI NAME</label>
-              <input
-                className="text-ellipsis px-16 py-8 my-4 w-col-span-2 bg-surface1 hover:bg-surface1-hover rounded-8"
-                type="text"
-                placeholder="AI"
-                value={aiName}
-                onChange={onChangeAiName}
-              />
-            </div>
-            <div className="flex items-center gap-4">
-              <label className="w-[17%]">HUMAN NAME</label>
-              <input
-                className="text-ellipsis px-16 py-8 my-4 w-col-span-2 bg-surface1 hover:bg-surface1-hover rounded-8"
-                type="text"
-                placeholder="Human"
-                value={humanName}
-                onChange={onChangeHumanName}
-              />
-            </div>
+            {apiEndpoint === "custom" ? (
+              <>
+                <div className="flex items-center gap-4">
+                  <label className="w-[17%]">AI NAME</label>
+                  <input
+                    className="text-ellipsis px-16 py-8 my-4 w-col-span-2 bg-surface1 hover:bg-surface1-hover rounded-8"
+                    type="text"
+                    placeholder="AI"
+                    value={aiName}
+                    onChange={onChangeAiName}
+                  />
+                </div>
+                <div className="flex items-center gap-4">
+                  <label className="w-[17%]">HUMAN NAME</label>
+                  <input
+                    className="text-ellipsis px-16 py-8 my-4 w-col-span-2 bg-surface1 hover:bg-surface1-hover rounded-8"
+                    type="text"
+                    placeholder="Human"
+                    value={humanName}
+                    onChange={onChangeHumanName}
+                  />
+                </div>
+              </>
+            ) : null}
             <textarea
               value={systemPrompt}
               onChange={onChangeSystemPrompt}

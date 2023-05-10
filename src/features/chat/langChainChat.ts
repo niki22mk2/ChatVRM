@@ -20,7 +20,8 @@ export async function getChatResponseStreamLangChain(
       model: openAiModel,
       max_tokens: 200,
       ai_name: aiName,
-      human_name: humanName
+      human_name: humanName,
+      conversation_id: "testing"
     }),
   });
 
